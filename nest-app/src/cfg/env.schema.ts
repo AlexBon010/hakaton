@@ -7,10 +7,6 @@ export class EnvironmentSchema {
 
    @IsNotEmpty()
    @IsString()
-   POSTGRES_URL: string
-
-   @IsNotEmpty()
-   @IsString()
    OLLAMA_EMBEDDING_URL: string
 
    @IsNotEmpty()

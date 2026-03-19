@@ -15,23 +15,6 @@ services:
       retries: 3
       start_period: 10s
 
-  postgres:
-    image: postgres:16-alpine
-    env_file:
-      - .env
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
   nest-app:
     build:
       context: .
@@ -40,11 +23,6 @@ services:
       - .env
     ports:
       - "${PORT}:${PORT}"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      ollama-embedding:
-        condition: service_healthy
     networks:
       - app-network
     healthcheck:
@@ -55,7 +33,6 @@ services:
       start_period: 30s
 
 volumes:
-  postgres_data:
   qdrant_data:
 
 networks:
