@@ -5,8 +5,16 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import cookieParser from 'cookie-parser';
 
 import { json, text } from 'express'
+import { setGlobalDispatcher, Agent } from 'undici'
 
 import { AppModule } from './app.module'
+
+setGlobalDispatcher(
+   new Agent({
+      headersTimeout: 15 * 60 * 1000,
+      bodyTimeout: 15 * 60 * 1000,
+   })
+)
 
 async function bootstrap() {
    const app = await NestFactory.create(AppModule, {

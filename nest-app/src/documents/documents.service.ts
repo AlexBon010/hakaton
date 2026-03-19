@@ -8,7 +8,7 @@ import { SearchResult } from '../qdrant/qdrant.service'
 
 import {
    AiPriorityResult,
-   AnnotatedDifference,
+   Change,
    CompareResult,
    Difference,
    PRIORITY_COLORS,
@@ -59,9 +59,9 @@ export class DocumentsService {
 
       if (differences.length === 0) {
          return {
-            oldDoc: oldBuffer.toString('base64'),
-            newDoc: newBuffer.toString('base64'),
-            differences: [],
+            annotatedOldDoc: oldBuffer.toString('base64'),
+            annotatedNewDoc: newBuffer.toString('base64'),
+            changes: [],
             vectorContext: [],
          }
       }
@@ -77,9 +77,10 @@ export class DocumentsService {
          this.annotatePdf(newBuffer, newPages, differences, priorities, 'new'),
       ])
 
-      const annotatedDifferences: AnnotatedDifference[] = differences.map((diff) => {
+      const changes: Change[] = differences.map((diff) => {
          const found = priorities.find((p) => p.index === diff.index)
-         return { ...diff, priority: found?.priority ?? 'doubtful' }
+         const annotationId = `ann-${String(diff.index).padStart(3, '0')}`
+         return { ...diff, priority: found?.priority ?? 'doubtful', annotationId }
       })
 
       const vectorContext: VectorRecord[] = context.map((r) => ({
@@ -91,9 +92,9 @@ export class DocumentsService {
       }))
 
       return {
-         oldDoc: annotatedOld.toString('base64'),
-         newDoc: annotatedNew.toString('base64'),
-         differences: annotatedDifferences,
+         annotatedOldDoc: annotatedOld.toString('base64'),
+         annotatedNewDoc: annotatedNew.toString('base64'),
+         changes,
          vectorContext,
       }
    }
@@ -400,6 +401,7 @@ ${JSON.stringify(differences, null, 2)}
          }
 
          const annotRef = pdfDoc.context.nextRef()
+         const annotationId = `ann-${String(diff.index).padStart(3, '0')}`
          const annotDict = pdfDoc.context.obj({
             Type: PDFName.of('Annot'),
             Subtype: PDFName.of('Highlight'),
@@ -407,7 +409,7 @@ ${JSON.stringify(differences, null, 2)}
             QuadPoints: allQuadPoints.map((v) => PDFNumber.of(v)),
             C: color.map((v) => PDFNumber.of(v)),
             CA: PDFNumber.of(0.35),
-            NM: PDFString.of(`ann-${diff.index}`),
+            NM: PDFString.of(annotationId),
             F: PDFNumber.of(4),
          })
 

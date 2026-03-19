@@ -11,7 +11,8 @@ export interface AiPriorityResult {
    priority: Priority
 }
 
-export interface AnnotatedDifference extends Difference {
+export interface Change extends Difference {
+   annotationId: string
    priority: Priority
 }
 
@@ -33,9 +34,9 @@ export interface VectorRecord {
 }
 
 export interface CompareResult {
-   oldDoc: string
-   newDoc: string
-   differences: AnnotatedDifference[]
+   annotatedOldDoc: string
+   annotatedNewDoc: string
+   changes: Change[]
    vectorContext: VectorRecord[]
 }
 

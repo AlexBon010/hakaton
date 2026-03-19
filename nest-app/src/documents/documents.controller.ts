@@ -40,17 +40,18 @@ export class DocumentsController {
       schema: {
          type: 'object',
          properties: {
-            oldDoc: { type: 'string', description: 'Base64-encoded annotated old PDF' },
-            newDoc: { type: 'string', description: 'Base64-encoded annotated new PDF' },
-            differences: {
+            annotatedOldDoc: { type: 'string', description: 'Base64-encoded annotated old PDF' },
+            annotatedNewDoc: { type: 'string', description: 'Base64-encoded annotated new PDF' },
+            changes: {
                type: 'array',
                items: {
                   type: 'object',
                   properties: {
+                     annotationId: { type: 'string' },
                      index: { type: 'number' },
+                     priority: { type: 'string', enum: ['safely', 'doubtful', 'contradictory'] },
                      oldFormulation: { type: 'string' },
                      newFormulation: { type: 'string' },
-                     priority: { type: 'string', enum: ['safely', 'doubtful', 'contradictory'] },
                   },
                },
             },
