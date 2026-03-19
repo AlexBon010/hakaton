@@ -16,7 +16,7 @@ interface ActSource {
 
 const SOURCES: ActSource[] = [
    { file: 'k_chunks.json', actCode: 'k' },
-   { file: 'tk_chunks.json', actCode: 'tk' },
+   // { file: 'tk_chunks.json', actCode: 'tk' },
    { file: 'gk_chunks.json', actCode: 'gk' },
 ]
 
@@ -30,6 +30,8 @@ export class DatasetService implements OnModuleInit {
 
       for (const source of SOURCES) {
          const filePath = path.join(datasetDir, source.file)
+         this.logger.log(`Parsing ${source.file}...`)
+
          const raw = await readFile(filePath, 'utf-8')
          const chunks: RawChunk[] = JSON.parse(raw)
 
@@ -37,7 +39,7 @@ export class DatasetService implements OnModuleInit {
             this.store.set(`${source.actCode}:${chunk.id}`, chunk.text)
          }
 
-         this.logger.log(`Loaded ${chunks.length} chunks from ${source.file}`)
+         this.logger.log(`Parsed ${source.file}: ${chunks.length} chunks stored in memory (actCode=${source.actCode})`)
       }
 
       this.logger.log(`Dataset ready: ${this.store.size} entries in memory`)

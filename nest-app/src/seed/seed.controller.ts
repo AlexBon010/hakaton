@@ -5,8 +5,10 @@ import { QdrantService } from '../qdrant/qdrant.service'
 import { SeedService } from './seed.service'
 
 class SeedResponseDto {
-   @ApiProperty({ example: 520, description: 'Количество загруженных чанков' })
-   total: number
+   @ApiProperty({ example: 520, description: 'Количество добавленных чанков в этом запуске' })
+   added: number
+   @ApiProperty({ example: 845, description: 'Всего записей в БД после seed' })
+   totalInDb: number
 }
 
 @ApiTags('seed')
@@ -31,20 +33,22 @@ export class SeedController {
       return this.seedService.seed()
    }
 
-   @Get('last')
-   @ApiOperation({ summary: 'Последняя запись в векторной БД' })
-   @ApiResponse({ status: 200, description: 'Последняя точка из коллекции law_chunks с метаданными' })
-   async last() {
-      const count = await this.qdrant.getCount('law_chunks')
-      const last = await this.qdrant.getLastPoint('law_chunks')
-      return { count, last }
-   }
+  @Get('count')
+  @ApiOperation({ summary: 'Всего записей в векторной БД' })
+  @ApiResponse({ status: 200, description: 'Точное количество точек в коллекции law_chunks' })
+  async count() {
+     const count = await this.qdrant.getCount('law_chunks')
+     return { count }
+  }
 
-   @Get('count')
-   @ApiOperation({ summary: 'Количество записей в векторной БД' })
-   @ApiResponse({ status: 200, description: 'Количество точек в коллекции law_chunks' })
-   async count() {
-      const count = await this.qdrant.getCount('law_chunks')
-      return { count }
-   }
+  @Get('last')
+  @ApiOperation({ summary: 'Последняя запись в векторной БД' })
+  @ApiResponse({ status: 200, description: 'Последняя точка из коллекции law_chunks с метаданными' })
+  async last() {
+     const [count, last] = await Promise.all([
+        this.qdrant.getCount('law_chunks'),
+        this.qdrant.getLastPoint('law_chunks'),
+     ])
+     return { count, last }
+  }
 }

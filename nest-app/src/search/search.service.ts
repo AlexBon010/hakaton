@@ -17,4 +17,9 @@ export class SearchService {
       const vector = await this.embedding.embed(query)
       return this.qdrant.searchNearest(COLLECTION, vector, limit)
    }
+
+   async findMostSimilar(query: string, limit = 3): Promise<SearchResult[]> {
+      const vector = await this.embedding.embed(query)
+      return this.qdrant.searchNearest(COLLECTION, vector, limit)
+   }
 }

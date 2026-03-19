@@ -68,6 +68,14 @@ export class QdrantService {
    }
 
    async upsertBatch(name: string, points: UpsertPoint[]): Promise<void> {
+      if (points.length === 0) return
+
+      const ids = points.map((p) => p.id)
+      const minId = Math.min(...ids)
+      const maxId = Math.max(...ids)
+      const idRange = ids.length === 1 ? `id=${minId}` : `ids=${minId}-${maxId}`
+      this.logger.log(`DB write: collection="${name}", ${points.length} points, ${idRange}`)
+
       await this.client.upsert(name, {
          wait: true,
          points: points.map((p) => ({
@@ -76,29 +84,63 @@ export class QdrantService {
             payload: p.payload,
          })),
       })
+
+      this.logger.log(`DB write complete: ${points.length} records saved`)
    }
 
    async getCount(name: string): Promise<number> {
-      const info = await this.client.getCollection(name)
-      return info.points_count ?? 0
+      try {
+         const result = await this.client.count(name, { exact: true })
+         return result.count ?? 0
+      } catch {
+         const info = await this.client.getCollection(name)
+         return info.points_count ?? 0
+      }
    }
 
-   async getLastPoint(name: string): Promise<{ id: number | string; vector: number[]; payload: PointPayload } | null> {
-      const info = await this.client.getCollection(name)
-      const total = info.points_count ?? 0
-      if (total === 0) return null
+   async getMaxPointId(name: string): Promise<number> {
+      const count = await this.getCount(name)
+      if (count === 0) return 0
 
-      const { points } = await this.client.scroll(name, {
-         limit: total,
+      let maxId = 0
+      let offset: number | string | Record<string, unknown> | null | undefined = undefined
+      const limit = 100
+
+      do {
+         const result = await this.client.scroll(name, {
+            limit,
+            offset,
+            with_payload: false,
+            with_vector: false,
+         })
+         const ids = (result.points ?? []).map((p) => {
+            const id = p.id
+            if (typeof id === 'number' && Number.isInteger(id)) return id
+            if (typeof id === 'string') return parseInt(id, 10) || 0
+            return 0
+         })
+         if (ids.length) maxId = Math.max(maxId, ...ids)
+         offset = result.next_page_offset
+      } while (offset != null)
+
+      this.logger.log(`getMaxPointId: collection="${name}", count=${count}, maxId=${maxId}`)
+      return maxId
+   }
+
+   async getLastPoint(name: string): Promise<{ id: number | string; payload: PointPayload } | null> {
+      const maxId = await this.getMaxPointId(name)
+      if (maxId === 0) return null
+
+      const result = await this.client.retrieve(name, {
+         ids: [maxId],
          with_payload: true,
-         with_vector: true,
+         with_vector: false,
       })
-      if (!points.length) return null
+      if (!result.length) return null
 
-      const p = points[points.length - 1]
+      const p = result[0]
       return {
          id: p.id,
-         vector: p.vector as number[],
          payload: p.payload as unknown as PointPayload,
       }
    }

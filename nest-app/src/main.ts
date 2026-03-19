@@ -4,7 +4,7 @@ import { NestFactory, Reflector } from '@nestjs/core'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import cookieParser from 'cookie-parser';
 
-import { json } from 'express'
+import { json, text } from 'express'
 
 import { AppModule } from './app.module'
 
@@ -26,6 +26,7 @@ async function bootstrap() {
 
    app.use(cookieParser());
    app.use(json())
+   app.use(text())
 
    app.useGlobalPipes(
       new ValidationPipe({
