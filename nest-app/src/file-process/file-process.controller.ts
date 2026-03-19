@@ -13,19 +13,19 @@ import { FileProcessService } from './file-process.service'
 import type { CompareDocumentsFiles } from './file-process.types'
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20 MB
-const DOCS = FILE_PROCESS_API_DOCS.extract
+const SIMILARITY_DOCS = FILE_PROCESS_API_DOCS.similarity
 
 @ApiTags(FILE_PROCESS_API_DOCS.tags)
 @Controller('documents')
 export class FileProcessController {
    constructor(private readonly fileProcessService: FileProcessService) {}
 
-   @Post('extract')
-   @ApiOperation({ summary: DOCS.summary, description: DOCS.description })
+   @Post('similarity')
+   @ApiOperation({ summary: SIMILARITY_DOCS.summary, description: SIMILARITY_DOCS.description })
    @ApiConsumes('multipart/form-data')
-   @ApiBody({ schema: DOCS.bodySchema })
-   @ApiResponse({ status: 200, ...DOCS.response200 })
-   @ApiResponse({ status: 400, description: DOCS.response400 })
+   @ApiBody({ schema: SIMILARITY_DOCS.bodySchema })
+   @ApiResponse({ status: 200, ...SIMILARITY_DOCS.response200 })
+   @ApiResponse({ status: 400, description: SIMILARITY_DOCS.response400 })
    @UseInterceptors(
       FileFieldsInterceptor(
          [
@@ -45,10 +45,7 @@ export class FileProcessController {
          },
       ),
    )
-   async extractText(
-      @UploadedFiles()
-      files: CompareDocumentsFiles,
-   ) {
+   async compareSimilarity(@UploadedFiles() files: CompareDocumentsFiles) {
       const oldFile = files.oldDoc?.[0]
       const newFile = files.newDoc?.[0]
 
@@ -56,20 +53,11 @@ export class FileProcessController {
          throw new BadRequestException('Both oldDoc and newDoc PDF files are required')
       }
 
-      const result = await this.fileProcessService.extractTextFromPdfsAsync(
+      const similarity = await this.fileProcessService.compareSimilarity(
          oldFile.buffer,
          newFile.buffer,
       )
 
-      return {
-         oldDoc: {
-            text: result.oldDoc.text,
-            totalPages: result.oldDoc.totalPages,
-         },
-         newDoc: {
-            text: result.newDoc.text,
-            totalPages: result.newDoc.totalPages,
-         },
-      }
+      return { similarity }
    }
 }

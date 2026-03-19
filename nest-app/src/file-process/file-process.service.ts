@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { extractText } from 'unpdf'
 
+import { EmbeddingRepository } from '../ollama/embedding.repository'
+
 const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20 MB
 
 export interface ExtractResult {
@@ -10,6 +12,8 @@ export interface ExtractResult {
 
 @Injectable()
 export class FileProcessService {
+   constructor(private readonly embeddingRepository: EmbeddingRepository) {}
+
    async extractTextFromPdf(buffer: Buffer): Promise<ExtractResult> {
       if (buffer.length > MAX_FILE_SIZE) {
          throw new Error(`File size exceeds ${MAX_FILE_SIZE / 1024 / 1024} MB limit`)
@@ -24,15 +28,17 @@ export class FileProcessService {
       }
    }
 
-   async extractTextFromPdfsAsync(
-      oldBuffer: Buffer,
-      newBuffer: Buffer,
-   ): Promise<{ oldDoc: ExtractResult; newDoc: ExtractResult }> {
+   async compareSimilarity(oldBuffer: Buffer, newBuffer: Buffer): Promise<number> {
       const [oldDoc, newDoc] = await Promise.all([
          this.extractTextFromPdf(oldBuffer),
          this.extractTextFromPdf(newBuffer),
       ])
 
-      return { oldDoc, newDoc }
+      const similarity = await this.embeddingRepository.compareSimilarity(
+         oldDoc.text,
+         newDoc.text,
+      )
+      console.log('Similarity:', similarity)
+      return similarity
    }
 }

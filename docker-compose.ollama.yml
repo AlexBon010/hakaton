@@ -6,8 +6,6 @@ services:
     container_name: ollama-embedding
     ports:
       - "11434:11434"
-    volumes:
-      - ollama_embedding_data:/root/.ollama
     healthcheck:
       test: ["CMD", "ollama", "list"]
       interval: 10s
@@ -32,5 +30,4 @@ services:
       start_period: 300s
 
 volumes:
-  ollama_embedding_data:
   ollama_llm_data:

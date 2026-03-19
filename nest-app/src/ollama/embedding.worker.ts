@@ -9,7 +9,8 @@ function cosineSimilarity(a: number[], b: number[]): number {
    const normB = Math.sqrt(b.reduce((sum, x) => sum + x * x, 0))
    const magnitude = normA * normB
    if (magnitude === 0) return 0
-   return dotProduct / magnitude
+   const similarity = dotProduct / magnitude
+   return Math.max(-1, Math.min(1, similarity))
 }
 
 const { a, b } = workerData as { a: number[]; b: number[] }
