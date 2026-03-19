@@ -9,5 +9,6 @@ import { SearchService } from './search.service'
    imports: [OllamaModule, QdrantModule],
    controllers: [SearchController],
    providers: [SearchService],
+   exports: [SearchService],
 })
 export class SearchModule {}

@@ -8,5 +8,6 @@ import { FileProcessService } from './file-process.service'
    imports: [OllamaModule],
    controllers: [FileProcessController],
    providers: [FileProcessService],
+   exports: [FileProcessService],
 })
 export class FileProcessModule {}
