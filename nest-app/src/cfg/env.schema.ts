@@ -32,5 +32,5 @@ export class EnvironmentSchema {
 
    @IsNotEmpty()
    @IsNumber()
-   EMBEDDING_WEIGHT_NOMIC: number
+   EMBEDDING_WEIGHT_RERANKER: number
 }
