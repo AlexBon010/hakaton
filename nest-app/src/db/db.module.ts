@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-import { Document } from './entities/document.entity.js'
-import { DbService } from './db.service.js'
+import { Document } from './entities/document.entity'
+import { DbService } from './db.service'
 
 @Module({
    imports: [
