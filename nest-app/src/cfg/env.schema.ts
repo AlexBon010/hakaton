@@ -20,17 +20,4 @@ export class EnvironmentSchema {
    @IsNotEmpty()
    @IsString()
    QDRANT_URL: string
-
-   @IsNotEmpty()
-   @IsString()
-   @IsIn(['true', 'false'])
-   EMBEDDING_MULTI_MODEL: string
-
-   @IsNotEmpty()
-   @IsNumber()
-   EMBEDDING_WEIGHT_BGE: number
-
-   @IsNotEmpty()
-   @IsNumber()
-   EMBEDDING_WEIGHT_RERANKER: number
 }
