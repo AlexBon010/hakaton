@@ -1,0 +1,36 @@
+services:
+  ollama-embedding:
+    build:
+      context: ./ollama-embedding
+      dockerfile: Dockerfile
+    container_name: ollama-embedding
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_embedding_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+
+  ollama-llm:
+    build:
+      context: ./ollama-llm
+      dockerfile: Dockerfile
+    container_name: ollama-llm
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_llm_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+
+volumes:
+  ollama_embedding_data:
+  ollama_llm_data:
