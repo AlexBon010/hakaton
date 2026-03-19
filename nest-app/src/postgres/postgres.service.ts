@@ -5,7 +5,7 @@ import { Repository } from 'typeorm'
 import { Document } from './entities/document.entity'
 
 @Injectable()
-export class DbService {
+export class PostgresService {
    constructor(
       @InjectRepository(Document)
       private readonly documentRepository: Repository<Document>,

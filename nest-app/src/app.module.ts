@@ -4,8 +4,10 @@ import { join } from 'path'
 
 import { AppController } from './app.controller';
 import { CfgModule } from './cfg/cfg.module';
-import { DbModule } from './db/db.module';
 import { FileProcessModule } from './file-process/file-process.module';
+import { OllamaModule } from './ollama/ollama.module';
+import { PostgresModule } from './postgres/postgres.module';
+import { QdrantModule } from './qdrant/qdrant.module';
 
 @Module({
   imports: [
@@ -14,8 +16,10 @@ import { FileProcessModule } from './file-process/file-process.module';
       serveRoot: '/api/examples',
     }),
     CfgModule,
-    // DbModule,
+    PostgresModule,
+    QdrantModule,
     FileProcessModule,
+    OllamaModule,
   ],
   controllers: [AppController],
 })

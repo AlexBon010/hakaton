@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common'
 
-import { OllamaService } from './ollama.service'
+import { AiRepository } from './ai.repository'
+import { EmbeddingRepository } from './embedding.repository'
 
 @Module({
-   providers: [OllamaService],
-   exports: [OllamaService],
+   providers: [EmbeddingRepository, AiRepository],
+   exports: [EmbeddingRepository, AiRepository],
 })
 export class OllamaModule {}

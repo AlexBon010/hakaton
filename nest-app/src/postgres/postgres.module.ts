@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { Document } from './entities/document.entity'
-import { DbService } from './db.service'
+import { PostgresService } from './postgres.service'
 
 @Module({
    imports: [
@@ -18,7 +18,7 @@ import { DbService } from './db.service'
       }),
       TypeOrmModule.forFeature([Document]),
    ],
-   providers: [DbService],
-   exports: [DbService],
+   providers: [PostgresService],
+   exports: [PostgresService],
 })
-export class DbModule {}
+export class PostgresModule {}

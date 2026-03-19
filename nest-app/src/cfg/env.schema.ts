@@ -9,9 +9,15 @@ export class EnvironmentSchema {
    @IsString()
    POSTGRES_URL: string
 
+   @IsNotEmpty()
    @IsString()
-   OLLAMA_EMBEDDING_URL?: string
+   OLLAMA_EMBEDDING_URL: string
 
+   @IsNotEmpty()
    @IsString()
-   OLLAMA_LLM_URL?: string
+   OLLAMA_LLM_URL: string
+
+   @IsNotEmpty()
+   @IsString()
+   QDRANT_URL: string
 }
