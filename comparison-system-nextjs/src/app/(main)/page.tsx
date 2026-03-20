@@ -26,8 +26,8 @@ export default function Page() {
         newDoc,
       });
 
-      setOldDoc(annotatedOldDoc);
-      setNewDoc(annotatedNewDoc);
+      setOldDoc(`data:application/pdf;base64,${annotatedOldDoc}`);
+      setNewDoc(`data:application/pdf;base64,${annotatedNewDoc}`);
       setChanges(changes);
     } catch (error) {
       console.error('Ошибка', error);

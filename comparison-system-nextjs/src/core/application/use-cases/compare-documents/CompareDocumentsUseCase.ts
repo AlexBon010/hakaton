@@ -22,8 +22,8 @@ export class CompareDocumentsUseCase implements UseCase<
     const { oldDoc, newDoc } = payload;
 
     const formData = new FormData();
-    if (oldDoc) formData.append('file', oldDoc);
-    if (newDoc) formData.append('file', newDoc);
+    if (oldDoc) formData.append('oldDoc', oldDoc);
+    if (newDoc) formData.append('newDoc', newDoc);
 
     try {
       return await this.fileRepository.compare(formData);

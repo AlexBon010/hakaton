@@ -314,7 +314,7 @@ export class DocumentsService {
          .map((r, i) => {
             const { act_name, article, text, chunk_id } = r.payload
             return [
-               `[${i + 1}] Акт: "${act_name}", Статья: ${article} (chunk_id: ${chunk_id})`,
+               `[${i + 1}] Акт: "${act_name}", Статья: ${article} (chunk_id: ${chunk_id}), релевантность: ${r.score.toFixed(4)}`,
                `    Содержание: "${text}"`,
             ].join('\n')
          })

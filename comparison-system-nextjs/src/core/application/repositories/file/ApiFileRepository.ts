@@ -27,13 +27,24 @@ export class ApiFileRepository extends Repository implements FileRepository {
         data,
       );
 
-      return comparisonResultSchema.parse(res);
+      console.log('[ApiFileRepository] Raw response keys:', Object.keys(res as object));
+
+      const parsed = comparisonResultSchema.safeParse(res);
+      if (!parsed.success) {
+        console.error('[ApiFileRepository] Zod validation failed:', JSON.stringify(parsed.error.issues, null, 2));
+        throw new HttpError(`Validation error: ${parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ')}`);
+      }
+
+      return parsed.data;
     } catch (error) {
+      console.error('[ApiFileRepository] Compare error:', error);
+
       if (error instanceof HttpError) {
         throw error;
       }
 
-      throw new HttpError('Ошибка сравнения файлов!');
+      const message = error instanceof Error ? error.message : String(error);
+      throw new HttpError(`Ошибка сравнения файлов: ${message}`);
     }
   }
 }

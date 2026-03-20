@@ -1,17 +1,14 @@
 import { z } from 'zod';
 
 import { changeItemSchema } from './changeItemSchema';
-import { fileSchema } from './fileSchema';
 
 export const comparisonResultSchema = z.object({
   annotatedOldDoc: z
-    .url()
-    .or(fileSchema)
-    .describe('URL или файл старой версии'),
+    .string()
+    .describe('Base64-encoded annotated old PDF'),
   annotatedNewDoc: z
     .string()
-    .or(fileSchema)
-    .describe('URL или файл новой версии'),
+    .describe('Base64-encoded annotated new PDF'),
   changes: z.array(changeItemSchema).describe('Список найденных различий'),
 });
 
